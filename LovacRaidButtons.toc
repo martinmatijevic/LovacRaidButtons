@@ -1,0 +1,9 @@
+## Interface: 120000
+## Title: Lovac Raid Buttons
+## Notes: Movable raid warning buttons
+## Author: Lovac
+## Version: 1.0
+
+## SavedVariables: LovacRaidButtonsDB
+
+LovacRaidButtons.lua
