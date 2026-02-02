@@ -6,21 +6,27 @@
 ## Features
 - Add, edit, and remove custom raid warning buttons
 - One-click raid warning messages
-- Built-in pull timer
-- Simple and lightweight UI
+- Built-in pull timer and ready check
+- Simple and lightweight UI+
 
 ## Installation (via WowUp)
 1. Open **WowUp**
 2. Go to **Get Addons**
 3. Click **Install from URL**
 4. Paste the addon URL: `https://github.com/martinmatijevic/LovacRaidButtons`
-5. Install and reload your game
+5. Set it to "auto-update"
+6. Install and reload your game
 
 ## Usage
 - Open the addon interface in-game
 - Create buttons with predefined (or your own) raid warnings
 - Click a button to instantly send the message as raid warning
 - Button for start/cancel pull timer
+
+## Slash Commands
+- `/lrb`, `/lrb on`, `/lrb show` shows buttons
+- `/lrb off`, `/lrb hide` hides buttons
+- `/lrb options` shows options interface
 
 ## Intended Audience
 - Raid Leaders

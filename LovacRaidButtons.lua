@@ -49,11 +49,24 @@ local TOP_PADDING = 16
 local BOTTOM_PADDING = 10
 
 -- =========================
--- Pull / Cancel Buttons (on main addon frame)
+-- Ready Check Button
+-- =========================
+local readyBtn = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
+readyBtn:SetSize(180, BUTTON_HEIGHT)
+readyBtn:SetPoint("TOP", frame, "TOP", 0, -TOP_PADDING)
+readyBtn:SetText("READY CHECK")
+readyBtn:SetNormalFontObject("GameFontNormal")
+readyBtn:SetHighlightFontObject("GameFontHighlight")
+readyBtn:SetScript("OnClick", function()
+    DoReadyCheck()
+end)
+
+-- =========================
+-- Pull / Cancel Buttons
 -- =========================
 local pullBtn = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
 pullBtn:SetSize(180, BUTTON_HEIGHT)
-pullBtn:SetPoint("TOP", frame, "TOP", 0, -TOP_PADDING)
+pullBtn:SetPoint("TOP", readyBtn, "BOTTOM", 0, -BUTTON_SPACING)
 pullBtn:SetText("PULL")
 pullBtn:SetNormalFontObject("GameFontNormal")
 pullBtn:SetHighlightFontObject("GameFontHighlight")
@@ -64,7 +77,7 @@ end)
 
 local cancelBtn = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
 cancelBtn:SetSize(180, BUTTON_HEIGHT)
-cancelBtn:SetPoint("TOP", pullBtn, "BOTTOM", 0, -6)
+cancelBtn:SetPoint("TOP", pullBtn, "BOTTOM", 0, -BUTTON_SPACING)
 cancelBtn:SetText("CANCEL PULL")
 cancelBtn:SetNormalFontObject("GameFontNormal")
 cancelBtn:SetHighlightFontObject("GameFontHighlight")
@@ -72,8 +85,9 @@ cancelBtn:SetScript("OnClick", function()
     C_PartyInfo.DoCountdown(0)
 end)
 
-
+-- =========================
 -- Restore position
+-- =========================
 if LovacRaidButtonsDB.position then
     local p = LovacRaidButtonsDB.position
     frame:SetPoint(p.point, UIParent, p.relPoint, p.x, p.y)
@@ -98,73 +112,6 @@ frame:SetScript("OnDragStop", function(self)
     local p, _, rp, x, y = self:GetPoint()
     LovacRaidButtonsDB.position = { point=p, relPoint=rp, x=x, y=y }
 end)
-
-
-
--- =========================
--- Visibility
--- =========================
-local function UpdateVisibility()
-    local inInstance, instanceType = IsInInstance()
-    if LovacRaidButtonsDB.frameVisible
-        and IsInRaid()
-        and inInstance
-        and instanceType == "raid" then
-        frame:Show()
-    else
-        frame:Hide()
-    end
-end
-
-frame:RegisterEvent("PLAYER_ENTERING_WORLD")
-frame:RegisterEvent("GROUP_ROSTER_UPDATE")
-frame:RegisterEvent("ZONE_CHANGED_NEW_AREA")
-frame:SetScript("OnEvent", UpdateVisibility)
-
--- =========================
--- Dynamic Buttons
--- =========================
-local buttons = {}
-
--- Create regular (non-fixed) buttons
-local function CreateRaidButton(y, label, message)
-    local btn = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
-    btn:SetSize(180, BUTTON_HEIGHT)
-    btn:SetPoint("TOP", 0, y)
-    btn:SetText(TruncateText(label, 10))
-    btn:SetScript("OnClick", function()
-        SendChatMessage(message, "RAID_WARNING")
-    end)
-    return btn
-end
-
-
--- =========================
--- Rebuild Buttons
--- =========================
-local function RebuildButtons()
-    -- hide old dynamic buttons
-    for _, b in pairs(buttons) do b:Hide() end
-    wipe(buttons)
-
-    -- Positioning starts below fixed buttons (PULL / CANCEL)
-    local y = -TOP_PADDING - (BUTTON_HEIGHT + BUTTON_SPACING) * 2
-    local count = 2
-
-    -- Saved buttons (defaults + customs)
-    for _, id in ipairs(LovacRaidButtonsDB.order) do
-        local data = LovacRaidButtonsDB.buttons[id]
-        if data then
-            local btn = CreateRaidButton(y, data.label, data.message)
-            buttons[id] = btn
-            y = y - (BUTTON_HEIGHT + BUTTON_SPACING)
-            count = count + 1
-        end
-    end
-
-    -- adjust frame height
-    frame:SetHeight(TOP_PADDING + (count * (BUTTON_HEIGHT + BUTTON_SPACING)) + BOTTOM_PADDING)
-end
 
 -- =========================
 -- Options Window
@@ -208,12 +155,116 @@ scrollChild:SetSize(1,1)
 scrollFrame:SetScrollChild(scrollChild)
 
 
+
+-- =========================
+-- Visibility
+-- =========================
+local function UpdateVisibility(target, force)
+    if target == "options" then
+        if options:IsShown() then
+            options:Hide()
+        else
+            options:Show()
+        end
+        return
+    end
+
+    if force then
+        frame:Show()
+        return
+    end
+
+    local inInstance, instanceType = IsInInstance()
+    if LovacRaidButtonsDB.frameVisible
+        and IsInRaid()
+        and inInstance
+        and instanceType == "raid" then
+        frame:Show()
+    else
+        frame:Hide()
+    end
+end
+
+frame:RegisterEvent("PLAYER_ENTERING_WORLD")
+frame:RegisterEvent("GROUP_ROSTER_UPDATE")
+frame:RegisterEvent("ZONE_CHANGED_NEW_AREA")
+frame:SetScript("OnEvent", UpdateVisibility)
+
+-- =========================
+-- Slash Commands
+-- =========================
+SLASH_LOVACRAIDBUTTONS1 = "/lrb"
+SlashCmdList["LOVACRAIDBUTTONS"] = function(msg)
+    msg = msg:lower()
+
+    if msg == "options" then
+        UpdateVisibility("options")
+        return
+    end
+
+    if msg == "on" or msg == "show" then
+        LovacRaidButtonsDB.frameVisible = true
+    elseif msg == "off" or msg == "hide" then
+        LovacRaidButtonsDB.frameVisible = false
+        frame:Hide()
+        return
+    else
+        LovacRaidButtonsDB.frameVisible = not LovacRaidButtonsDB.frameVisible
+    end
+
+    UpdateVisibility(nil, true)
+end
+
+-- =========================
+-- Dynamic Buttons
+-- =========================
+local buttons = {}
+local function CreateRaidButton(y, label, message)
+    local btn = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
+    btn:SetSize(180, BUTTON_HEIGHT)
+    btn:SetPoint("TOP", 0, y)
+    btn:SetText(TruncateText(label, 10))
+    btn:SetScript("OnClick", function()
+        SendChatMessage(message, "RAID_WARNING")
+    end)
+    return btn
+end
+
+
+-- =========================
+-- Rebuild Buttons
+-- =========================
+local function RebuildButtons()
+    -- hide old dynamic buttons
+    for _, b in pairs(buttons) do b:Hide() end
+    wipe(buttons)
+
+    -- Positioning starts below fixed buttons (PULL / CANCEL)
+    local y = -TOP_PADDING - (BUTTON_HEIGHT + BUTTON_SPACING) * 3
+    local count = 3
+
+    -- Saved buttons (defaults + customs)
+    for _, id in ipairs(LovacRaidButtonsDB.order) do
+        local data = LovacRaidButtonsDB.buttons[id]
+        if data then
+            local btn = CreateRaidButton(y, data.label, data.message)
+            buttons[id] = btn
+            y = y - (BUTTON_HEIGHT + BUTTON_SPACING)
+            count = count + 1
+        end
+    end
+
+    -- adjust frame height
+    frame:SetHeight(TOP_PADDING + (count * (BUTTON_HEIGHT + BUTTON_SPACING)) + BOTTOM_PADDING)
+end
+
+
 -- =========================
 -- Custom Edit Button Popup (replaces StaticPopup)
 -- =========================
 local function ShowEditPopup(data, RebuildButtonsFunc, RefreshOptionsFunc)
     local popup = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
-    popup:SetSize(280,180)
+    popup:SetSize(280,200)
     popup:SetPoint("CENTER")
     popup:SetBackdrop({
         bgFile = "Interface/DialogFrame/UI-DialogBox-Background",
@@ -226,6 +277,25 @@ local function ShowEditPopup(data, RebuildButtonsFunc, RefreshOptionsFunc)
     popup:RegisterForDrag("LeftButton")
     popup:SetScript("OnDragStart", popup.StartMoving)
     popup:SetScript("OnDragStop", popup.StopMovingOrSizing)
+    popup:SetResizable(true)
+    popup:SetScript("OnSizeChanged", function(self, width, height)
+        if width < 280 then self:SetWidth(280) end
+        if height < 200 then self:SetHeight(200) end
+    end)
+
+    local resizeHandle = CreateFrame("Button", nil, popup)
+    resizeHandle:SetSize(16, 16)
+    resizeHandle:SetPoint("BOTTOMRIGHT", -10, 10)
+    resizeHandle:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Up")
+    resizeHandle:SetHighlightTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Highlight")
+    resizeHandle:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Down")
+
+    resizeHandle:SetScript("OnMouseDown", function(self)
+        popup:StartSizing("BOTTOMRIGHT")
+    end)
+    resizeHandle:SetScript("OnMouseUp", function(self)
+        popup:StopMovingOrSizing()
+    end)
 
     local title = popup:CreateFontString(nil,"OVERLAY","GameFontHighlightLarge")
     title:SetPoint("TOP",0,-20)
@@ -236,10 +306,13 @@ local function ShowEditPopup(data, RebuildButtonsFunc, RefreshOptionsFunc)
     closeX:SetScript("OnClick", function() popup:Hide() end)
 
     -- Message
-    local msgBox = CreateFrame("EditBox", nil, popup, "InputBoxTemplate")
-    msgBox:SetSize(220,24)
+    local msgBox = CreateFrame("EditBox", nil, popup, "BackdropTemplate")
+    msgBox:SetSize(220,100)
     msgBox:SetPoint("TOP", title, "BOTTOM", 0, -25)
+    msgBox:SetMultiLine(true)
     msgBox:SetAutoFocus(true)
+    msgBox:SetFontObject("ChatFontNormal")
+    msgBox:SetTextInsets(8, 8, 8, 8)
     msgBox:SetText(data.message)
     msgBox:SetMaxLetters(200)
 

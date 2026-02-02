@@ -2,8 +2,8 @@
 ## Title: Lovac Raid Buttons
 ## Notes: Movable raid warning buttons
 ## Author: Lovac
-## Version: 1.0
-
+## Version: 1.1
 ## SavedVariables: LovacRaidButtonsDB
+## IconTexture: Interface\AddOns\LovacRaidButtons\media\LovacRaidButtons
 
 LovacRaidButtons.lua
