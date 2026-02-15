@@ -1,8 +1,8 @@
-## Interface: 120000
+## Interface: 120001, 120000
 ## Title: Lovac Raid Buttons
 ## Notes: Movable raid warning buttons
 ## Author: Lovac
-## Version: 1.1
+## Version: 1.2
 ## SavedVariables: LovacRaidButtonsDB
 ## IconTexture: Interface\AddOns\LovacRaidButtons\media\LovacRaidButtons
 
