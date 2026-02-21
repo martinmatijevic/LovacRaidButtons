@@ -6,4 +6,7 @@
 ## SavedVariables: LovacRaidButtonsDB
 ## IconTexture: Interface\AddOns\LovacRaidButtons\media\LovacRaidButtons
 
+module/Minimap.lua
+module/UI.lua
+module/Popups.lua
 LovacRaidButtons.lua
