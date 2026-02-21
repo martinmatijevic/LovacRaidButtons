@@ -7,6 +7,7 @@
 - Add, edit, and remove custom raid warning buttons
 - One-click raid warning messages
 - Built-in pull timer and ready check
+- Checkmark to toggle on/off replacing word "me" with your name-realm in raid warnings 
 - Simple and lightweight UI+
 
 ## Installation (via WowUp)
@@ -21,7 +22,6 @@
 - Open the addon interface in-game
 - Create buttons with predefined (or your own) raid warnings
 - Click a button to instantly send the message as raid warning
-- Button for start/cancel pull timer
 
 ## Slash Commands
 - `/lrb`, `/lrb on`, `/lrb show` shows buttons
