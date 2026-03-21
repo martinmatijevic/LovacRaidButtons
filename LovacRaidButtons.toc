@@ -2,7 +2,7 @@
 ## Title: Lovac Raid Buttons
 ## Notes: Movable raid warning buttons
 ## Author: fenix4ever
-## Version: 1.3
+## Version: 1.4
 ## SavedVariables: LovacRaidButtonsDB
 ## IconTexture: Interface\AddOns\LovacRaidButtons\media\PhoenixLogo
 ## Category: Lovac
