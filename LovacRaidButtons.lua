@@ -4,10 +4,10 @@
 
 -- Default buttons (used only on first install)
 local DEFAULT_BUTTONS = {
-    { label = "Welcome",  message = "Welcome to this Manaforge Omega Run. Everyone will get summoned inside the raid shortly. Please ONLY TRADE me inside the raid. If you have already paid, just wait for a summon." },
+    { label = "Welcome",  message = "Welcome to this Midnight Season 1 Run. Everyone will get summoned inside the raid shortly. Please ONLY TRADE me inside the raid. If you have already paid, just wait for a summon." },
     { label = "Trade me",  message = "If you haven't paid, please trade {rt8} me {rt8}." },
     { label = "All paid",  message = "Everyone has paid! Thank you for joining, enjoy your raid. Good luck!" },
-    { label = "Goodbye", message = "Thank you for joining this run! To get the best prices, find out about our deals or to leave a review, you can join our Discord here - discord.gg/dawneu" },
+    { label = "Goodbye", message = "Thank you for joining this run! To get the best prices, find out about our deals or to leave a review, you can join our discord - discord.gg/dawneu" },
 }
 
 -- =========================
